@@ -1,6 +1,5 @@
 {% comment %}
   Renders a megamenu for the header.
-
   Usage:
   {% render 'header-mega-menu' %}
 {% endcomment %}
@@ -44,6 +43,13 @@
                           aria-current="page"
                         {% endif %}
                       >
+                        {% assign collection_handle = childlink.object.handle %}
+                        {% assign collection = collections[collection_handle] %}
+                        {% if collection %}
+                          <img src="{{ collection.image | img_url: 'medium' }}" alt="{{ collection.title | escape }}" class="mega-menu__image"/>
+                        {% else %}
+                          <p>No image available</p>
+                        {% endif %}
                         {{ childlink.title | escape }}
                       </a>
                       {%- if childlink.links != blank -%}
@@ -58,6 +64,13 @@
                                   aria-current="page"
                                 {% endif %}
                               >
+                                {% assign collection_handle = grandchildlink.object.handle %}
+                                {% assign collection = collections[collection_handle] %}
+                                {% if collection %}
+                                  <img src="{{ collection.image | img_url: 'medium' }}" alt="{{ collection.title | escape }}" class="mega-menu__image"/>
+                                {% else %}
+                                  <p>No image available</p>
+                                {% endif %}
                                 {{ grandchildlink.title | escape }}
                               </a>
                             </li>
@@ -66,6 +79,19 @@
                       {%- endif -%}
                     </li>
                   {%- endfor -%}
+                  {% for block in section.blocks %}
+                    {% case block.type %}
+                      {% when 'menu' %}
+                        {% if block.settings.menu_text == link.title %}
+                          <li>
+                            <img src="{{ block.settings.image | img_url: 'master' }}" alt="{{ block.settings.alt_text }}" class="promo_menu"/>
+                            <h2>
+                              <a href="{{ block.settings.url }}">{{ block.settings.alt_text }}</a>
+                            </h2>
+                          </li>
+                        {% endif %}
+                    {% endcase %}
+                  {% endfor %}
                 </ul>
               </div>
             </details>
@@ -92,3 +118,39 @@
     {%- endfor -%}
   </ul>
 </nav>
+
+<style>
+  .mega-menu {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .mega-menu__item {
+    position: relative;
+    padding: 10px;
+  }
+
+  .mega-menu__link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .promo_menu {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 10px 0;
+  }
+
+  .mega-menu .mega-menu__list--condensed {
+    display: flex !important;
+  }
+
+  .mega-menu__image {
+    width: 100px;
+    height: auto;
+    margin-bottom: 10px;
+  }
+</style>
